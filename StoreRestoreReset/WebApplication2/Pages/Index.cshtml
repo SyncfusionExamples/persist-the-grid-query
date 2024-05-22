@@ -1,0 +1,66 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+<button id="store" class="e-btn e-warning" onclick="store()">Store Layout</button>
+<button id="restore" class="e-btn e-success" onclick="restore()">Restore Layout </button>
+<button id="reset" class="e-btn e-success" onclick="reset()">Reset Layout </button>
+@Html.AntiForgeryToken()
+    <div>
+        <ejs-grid id="Grid" dataSource="@Model.Datasource" created="created" allowPaging="true" allowReordering="true" height="300" allowsorting="true" toolbar="@(new List<string>() { "Add", "Edit", "Delete","Update","Cancel" })">
+            <e-grid-editSettings allowAdding="true" allowDeleting="true" allowEditing="true" mode="Normal"></e-grid-editSettings>
+            <e-grid-columns>
+                <e-grid-column field="OrderID" isPrimaryKey="true" headerText="Order ID"  width="120"></e-grid-column>
+                <e-grid-column field="CustomerID" headerText="Customer ID" width="120"></e-grid-column>
+                <e-grid-column field="Freight" headerText="Freight"  width="120"></e-grid-column>
+                <e-grid-column field="ShipCity" headerText="Ship City" width="120"></e-grid-column>
+            </e-grid-columns>
+        </ejs-grid>
+
+    </div>
+
+<script type="text/javascript">
+    function created() {
+        grid = this;
+        window.localStorage.setItem('initialGrid', grid.getPersistData()); // store the initial grid state to local storage on initial rendering.
+    }
+
+    function reset(e) {
+        var savedProperties = JSON.parse(window.localStorage.getItem('initialGrid')); // Get the initial grid state from local storage.
+        grid.setProperties(savedProperties)// reset the grid to initial state.
+
+    }
+
+    function store(e) {  // button click
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        var persistData = JSON.stringify({ persistData: grid.getPersistData() }); // Grid persistData
+        var ajax = new ej.base.Ajax({ // used our ajax to send the stored persistData to server
+            url: '/Index?handler=StorePersistData',
+            type: "POST",
+            contentType: "application/json",
+            datatype: "text",
+            beforeSend: function (req) {
+            req.httpRequest.setRequestHeader('XSRF-TOKEN', $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            data: persistData
+        });
+        ajax.send();
+    }
+    function restore(e) { // button click
+        var ajax = new ej.base.Ajax({ // used our ajax to send the retrive the persistData from server
+            url: "/Index?handler=Restore",
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function (req) {
+            req.httpRequest.setRequestHeader('XSRF-TOKEN', $('input:hidden[name="__RequestVerificationToken"]').val());
+            }
+        });
+        ajax.send();
+        ajax.onSuccess = function (result) {
+            var grid = document.getElementById("Grid").ej2_instances[0];
+            var state = JSON.parse(result);
+            grid.setProperties(state); // restore the Grid state
+        }
+    }
+</script>
