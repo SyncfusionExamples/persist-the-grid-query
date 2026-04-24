@@ -10,7 +10,7 @@ The project shows a practical approach to capturing the grid’s query parameter
 
 ## Key Features
 
-- Persist grid query information such as sorting and filtering
+- Persist grid query information, such as sorting and filtering
 - Restore grid state on reload or reinitialization
 - Uses Syncfusion Grid component behavior
 - Lightweight and easy-to-understand example implementation
@@ -27,7 +27,7 @@ The project shows a practical approach to capturing the grid’s query parameter
 2. Open the solution file in Visual Studio.
 3. Restore NuGet packages if required.
 4. Ensure the external service endpoint is accessible.
-5. Build and run the application.un serve
+5. Build and run the application.
 
 ## Resources
 
